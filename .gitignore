@@ -1,0 +1,8 @@
+alembic/
+cardenv/
+alembic.ini
+__pycache__
+.env
+accounts.json
+Chat_GPT_Prompt_Stripe_Rapid.docx
+vcard_app.db
