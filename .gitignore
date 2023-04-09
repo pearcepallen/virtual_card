@@ -1,6 +1,5 @@
 alembic/
 cardenv/
-alembic.ini
 __pycache__
 .env
 accounts.json
