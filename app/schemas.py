@@ -27,4 +27,8 @@ class User(UserBase):
     is_active: bool
 
     class Config:
-        orm_mode = True        
+        orm_mode = True      
+
+class Token(BaseModel):
+    card_product_token: str
+    user_token: str

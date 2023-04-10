@@ -230,7 +230,7 @@ async def create_marqeta_cardproduct():
     }    
     data = {
             "name": "virtual card",
-            "start_date": "2019-08-24",
+            "start_date": start_d,
             "config": {
                 "card_life_cycle": {
                     "activate_upon_issue": True
@@ -259,7 +259,7 @@ async def get_marqeta_cardproduct(token: str):
     return response.json()
 
 @app.post("/marqeta/cards/")
-async def create_marqeta_card(tokens: dict):
+async def create_marqeta_card(tokens: schemas.Token):
     base_url = os.environ["MARQETA_BASE_URL"]
     url = f"{base_url}/cards"
     username = os.environ['MARQETA_API_TOKEN']
@@ -271,8 +271,8 @@ async def create_marqeta_card(tokens: dict):
         "Authorization": f"Basic {auth}"
     }
     data = {
-        "card_product_token": tokens["card_product_token"],
-        "user_token": tokens["user_token"],    
+        "card_product_token": tokens.card_product_token,
+        "user_token": tokens.user_token,    
     }
     response = requests.post(url, headers=headers, json=data)
     return response.json()
