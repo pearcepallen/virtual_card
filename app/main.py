@@ -291,3 +291,73 @@ async def get_marqeta_card(token: str):
     }
     response = requests.get(url, headers=headers)
     return response.json()
+
+@app.post("/marqeta/fundingsource/")
+async def create_fundingsource(source: schemas.FundingSource):
+    base_url = os.environ["MARQETA_BASE_URL"]
+    url = f"{base_url}/cards"
+    username = os.environ['MARQETA_API_TOKEN']
+    password = os.environ['MARQETA_ADMIN_TOKEN']
+    auth = base64.b64encode(f"{username}:{password}".encode()).decode()
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": f"Basic {auth}"
+    }
+    data = {
+        "token": source.token,
+        "user_token": source.user_token,    
+        "routing_number": source.routing_number,    
+        "account_number": source.account_number,
+        "account_type": source.account_type,
+        "verification_notes": source.verification_notes,
+        "verification_override": True
+
+    }
+    response = requests.post(url, headers=headers, json=data)
+    return response.json()
+
+
+
+def test_link():
+    import plaid
+    import marqeta
+
+    # set up Plaid client
+    plaid_client = plaid.Client(client_id='your_plaid_client_id',
+                                secret='your_plaid_secret_key',
+                                environment='sandbox')
+
+    # set up Marqeta client
+    marqeta_client = marqeta.Client(base_url='https://sandbox-api.marqeta.com/v3',
+                                    username='your_marqeta_username',
+                                    password='your_marqeta_password')
+
+    # authenticate user and retrieve bank account information
+    response = plaid_client.Item.get(access_token='user_access_token')
+    accounts = response['accounts']
+    routing_number = accounts[0]['routing_number']
+    account_number = accounts[0]['account_number']
+
+    # create new funding source in Marqeta for user's bank account
+    funding_source = marqeta_client.fundingsources.create(
+        currency_code='USD',
+        name='Bank Account',
+        funding_source_type='ACH_US',
+        ach_account_holder_name='John Doe',
+        ach_account_number=account_number,
+        ach_routing_number=routing_number,
+        billing_address={
+            'first_name': 'John',
+            'last_name': 'Doe',
+            'address': '123 Main St',
+            'city': 'San Francisco',
+            'state': 'CA',
+            'zip': '94111',
+            'country': 'USA'
+        }
+    )
+
+    # link funding source to user's account in Marqeta
+    user_token = 'user_token'  # replace with actual user token
+    marqeta_client.cardholders.update(user_token, funding_source_token=funding_source['token'])
