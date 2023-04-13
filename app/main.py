@@ -292,7 +292,7 @@ async def get_marqeta_card(token: str):
     response = requests.get(url, headers=headers)
     return response.json()
 
-@app.post("/marqeta/fundingsource/")
+@app.post("/marqeta/fundingsource/ach")
 async def create_fundingsource(source: schemas.FundingSource):
     base_url = os.environ["MARQETA_BASE_URL"]
     url = f"{base_url}/cards"
