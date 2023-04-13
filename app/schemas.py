@@ -1,5 +1,6 @@
+from decimal import Decimal
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 class UserBase(BaseModel):
     username: str
@@ -45,3 +46,13 @@ class FundingSource(BaseModel):
     user_token: Optional[str] = None # Specifies the owner of the funding source. This token is required if a business_token is not specified. Allowable Values: 1–36 chars Send a GET request to /users to retrieve user tokens.
     verification_notes: Optional[str] = None # Free-form text field for holding notes about verification. This field is returned only if verification_override = true. Allowable Values: 255 char max
     verification_overried: Optional[bool] = None # Allows the ACH funding source to be used regardless of its verification status. Allowable Values: true, false Default value: false
+
+class TransactionCreate(BaseModel):
+    card_token: str
+    amount: Decimal
+    currency: str
+
+    @validator('currency')
+    def validate_currency(cls, currency):
+        if len(currency) != 3:
+            raise ValueError("Currency must be exactly three characters")
