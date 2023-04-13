@@ -312,7 +312,42 @@ async def create_fundingsource(source: schemas.FundingSource):
         "account_type": source.account_type,
         "verification_notes": source.verification_notes,
         "verification_override": True
+    }
+    response = requests.post(url, headers=headers, json=data)
+    return response.json()
 
+@app.post("/plaid/public_token/exchange")
+async def exchange_public_token(data: dict):
+    base_url = os.environ["PLAID_BASE_URL"]
+    url = f"{base_url}/item/public_token/exchange"
+    client_id = os.environ['PLAID_CLIENT_ID']
+    secret = os.environ['PLAID_SECRET_KEY']    
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    }
+    data = {
+        "client_id": client_id,
+        "secret": secret,
+        "public_token": data["public_token"]
+    }
+    response = requests.post(url, headers=headers, json=data)
+    return response.json()
+
+@app.post("/plaid/auth/get")
+async def auth_get(data: dict):
+    base_url = os.environ["PLAID_BASE_URL"]
+    url = f"{base_url}/item/public_token/exchange"
+    client_id = os.environ['PLAID_CLIENT_ID']
+    secret = os.environ['PLAID_SECRET_KEY']    
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    }
+    data = {
+        "client_id": client_id,
+        "secret": secret,
+        "access_token": data["access_token"]
     }
     response = requests.post(url, headers=headers, json=data)
     return response.json()
